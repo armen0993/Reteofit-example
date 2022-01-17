@@ -1,6 +1,8 @@
 package com.android.retrofit
 
 import android.content.Context
+import com.chuckerteam.chucker.api.ChuckerCollector
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -15,7 +17,16 @@ class RetrofitService(private val context: Context) {
         .build()
 
     private fun getClient(): OkHttpClient {
-        val okHttpClient = OkHttpClient.Builder().addInterceptor(InterceptorToken(context)).build()
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(
+            ChuckerInterceptor.Builder(context)
+                .collector(ChuckerCollector(context))
+                .maxContentLength(250000L)
+                .redactHeaders(emptySet())
+                .alwaysReadResponseBody(false)
+                .build()
+        )
+            .addInterceptor(InterceptorToken(context)).build()
         return okHttpClient
     }
 }
